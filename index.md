@@ -1,4 +1,4 @@
-🔥 This is a beautiful [mapping](https://github.com/ukb-pyro/origins/tree/session-with-gpt/ukubona) of your **pentadic recursive structure** into a **neurocognitive metaphor**, aligning **simulation architecture** with **brain function**. Here's a cleaned-up and expanded version to make the connections explicit and recursive, and offer you a naming scaffold that mirrors both **biological function** and **Ukubona's logic**:
+🔥 This is a beautiful [mapping](https://ukb-pyro.github.io/origins/) of your **pentadic recursive structure** into a **neurocognitive metaphor**, aligning **simulation architecture** with **brain function**. Here's a cleaned-up and expanded version to make the connections explicit and recursive, and offer you a naming scaffold that mirrors both **biological function** and **Ukubona's logic**:
 
 ---
 
