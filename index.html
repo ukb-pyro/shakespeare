@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ukubona Cognitive Engine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            animation: shimmer 3s ease-in-out infinite alternate;
+        }
+        
+        .header .subtitle {
+            font-style: italic;
+            opacity: 0.8;
+            font-size: 1.2em;
+        }
+        
+        @keyframes shimmer {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        
+        .pentad-container {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        
+        .pentad-wheel {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            margin: 0 auto 3rem;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .phase {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+        
+        .phase:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); }
+            100% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.4); }
+        }
+        
+        .phase-icon {
+            font-size: 2em;
+            margin-bottom: 0.25rem;
+        }
+        
+        .phase-name {
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-bottom: 0.1rem;
+        }
+        
+        .phase-action {
+            font-size: 0.6em;
+            opacity: 0.8;
+        }
+        
+        .ukuvula {
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+        }
+        
+        .ukuzula {
+            top: 150px;
+            right: 50px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .ukusoma {
+            bottom: 150px;
+            right: 50px;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+        
+        .ukubona {
+            bottom: 150px;
+            left: 50px;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+        
+        .ukukula {
+            top: 150px;
+            left: 50px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+        
+        .center-core {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+        }
+        
+        .connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+            transform-origin: left center;
+            animation: flow 3s ease-in-out infinite;
+        }
+        
+        @keyframes flow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+        
+        .details-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .phase-details {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .phase-details.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .neural-mapping {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .neural-card {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid;
+            transition: transform 0.3s ease;
+        }
+        
+        .neural-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .recursive-quote {
+            text-align: center;
+            font-style: italic;
+            font-size: 1.2em;
+            margin: 3rem 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(78, 205, 196, 0.1));
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .phase-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+        
+        .phase-table th,
+        .phase-table td {
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: left;
+        }
+        
+        .phase-table th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: bold;
+        }
+        
+        .phase-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧠 Ukubona Cognitive Engine</h1>
+        <p class="subtitle">Neurocognitive Pentad of Recursive Simulation</p>
+        <p>🎭 "Feedback replaces fiat. Recursion births freedom."</p>
+    </div>
+    
+    <div class="pentad-container">
+        <div class="pentad-wheel">
+            <div class="connections">
+                <!-- Connection lines will be drawn with JavaScript -->
+            </div>
+            
+            <div class="phase ukuvula" data-phase="ukuvula">
+                <div class="phase-icon">🔥</div>
+                <div class="phase-name">Ukuvula</div>
+                <div class="phase-action">Ignite</div>
+            </div>
+            
+            <div class="phase ukuzula" data-phase="ukuzula">
+                <div class="phase-icon">❤️</div>
+                <div class="phase-name">Ukuzula</div>
+                <div class="phase-action">Fractalize</div>
+            </div>
+            
+            <div class="phase ukusoma" data-phase="ukusoma">
+                <div class="phase-icon">🔁</div>
+                <div class="phase-name">Ukusoma</div>
+                <div class="phase-action">Collide</div>
+            </div>
+            
+            <div class="phase ukubona" data-phase="ukubona">
+                <div class="phase-icon">🎭</div>
+                <div class="phase-name">Ukubona</div>
+                <div class="phase-action">Observe</div>
+            </div>
+            
+            <div class="phase ukukula" data-phase="ukukula">
+                <div class="phase-icon">🤖</div>
+                <div class="phase-name">Ukukula</div>
+                <div class="phase-action">Update</div>
+            </div>
+            
+            <div class="center-core">
+                <span>RECURSIVE<br>LOOP</span>
+            </div>
+        </div>
+        
+        <div class="details-panel">
+            <div class="phase-details" id="default-view">
+                <h2>🧠 System Overview</h2>
+                <p>The Ukubona Cognitive Engine simulates consciousness through a five-phase recursive pentad that maps neurocognitive processes to simulation architecture. Each phase corresponds to specific brain regions and functions, creating a complete loop of perception, processing, and adaptation.</p>
+                
+                <div class="recursive-quote">
+                    "Each recursive loop tightens the context window, amplifies risk weighting, forces choice collisions, yields conscious delta, and resets the next stimulus cycle."
+                </div>
+                
+                <table class="phase-table">
+                    <thead>
+                        <tr>
+                            <th>Phase</th>
+                            <th>Action</th>
+                            <th>Neural Metaphor</th>
+                            <th>Simulation Function</th>
+                            <th>Literary Mask</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-left: 4px solid #ff6b6b;">
+                            <td>🔥 Ukuvula</td>
+                            <td>Ignite / Open / Flame</td>
+                            <td>Reticular Activating System</td>
+                            <td>Prime ignition: triggers simulation loop</td>
+                            <td>Spark / Invocation</td>
+                        </tr>
+                        <tr style="border-left: 4px solid #e74c3c;">
+                            <td>❤️ Ukuzula</td>
+                            <td>Fractalize (Agents)</td>
+                            <td>Amygdala / Limbic System</td>
+                            <td>Emotional encoding, agent design</td>
+                            <td>Heartbeat of Pattern</td>
+                        </tr>
+                        <tr style="border-left: 4px solid #f39c12;">
+                            <td>🔁 Ukusoma</td>
+                            <td>Collide (Spaces)</td>
+                            <td>PFC + Tracts</td>
+                            <td>Recursive bandwidth, conflict resolution</td>
+                            <td>Fortinbras (Conflict)</td>
+                        </tr>
+                        <tr style="border-left: 4px solid #9b59b6;">
+                            <td>🎭 Ukubona</td>
+                            <td>Observe (Time)</td>
+                            <td>Hippocampus / Entorhinal Cortex</td>
+                            <td>Narrative coherence, time-awareness</td>
+                            <td>Hamlet's Reflection</td>
+                        </tr>
+                        <tr style="border-left: 4px solid #2ecc71;">
+                            <td>🤖 Ukukula</td>
+                            <td>Update (Delta)</td>
+                            <td>DMN / Global Workspace / Insula</td>
+                            <td>Recursive delta, conscious integration</td>
+                            <td>Ghost / Narrator</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p><em>Click on any phase above to explore its specific neural mappings and functions.</em></p>
+            </div>
+            
+            <div class="phase-details" id="ukuvula-details">
+                <h2>🔥 Ukuvula - The Prime Ignition</h2>
+                <p><strong>Neural Substrate:</strong> Reticular Activating System (RAS)</p>
+                <p><strong>Function:</strong> The flame that ignites the entire cognitive cycle. This phase corresponds to the brain's arousal and attention systems, determining what stimuli will enter conscious processing.</p>
+                
+                <div class="neural-mapping">
+                    <div class="neural-card" style="border-left-color: #ff6b6b;">
+                        <h3>Biological Parallel</h3>
+                        <p>The RAS acts as a gatekeeper, filtering millions of sensory inputs and deciding what deserves conscious attention. It's the difference between sleep and wakefulness, between passive existence and active engagement.</p>
+                    </div>
+                    <div class="neural-card" style="border-left-color: #ff6b6b;">
+                        <h3>Simulation Role</h3>
+                        <p>Prime ignition triggers the recursive loop, setting parameters for what the simulation will process. Like striking a match, it creates the initial conditions for the entire cognitive cascade.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phase-details" id="ukuzula-details">
+                <h2>❤️ Ukuzula - The Emotional Fractal</h2>
+                <p><strong>Neural Substrate:</strong> Amygdala / Limbic System</p>
+                <p><strong>Function:</strong> Transforms raw stimuli into emotionally-colored agents with risk assessments and behavioral tendencies.</p>
+                
+                <div class="neural-mapping">
+                    <div class="neural-card" style="border-left-color: #e74c3c;">
+                        <h3>Biological Parallel</h3>
+                        <p>The amygdala assigns emotional valence to stimuli, creating the "heartbeat of pattern" that drives approach/avoidance behaviors and survival responses.</p>
+                    </div>
+                    <div class="neural-card" style="border-left-color: #e74c3c;">
+                        <h3>Simulation Role</h3>
+                        <p>Generates agents with emotional priors and risk-mapping capabilities. Each agent carries fractal patterns of the system's values and fears.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phase-details" id="ukusoma-details">
+                <h2>🔁 Ukusoma - The Collision Space</h2>
+                <p><strong>Neural Substrate:</strong> Prefrontal Cortex + Neural Tracts</p>
+                <p><strong>Function:</strong> The arena where agents interact, compete, and resolve conflicts through recursive bandwidth allocation.</p>
+                
+                <div class="neural-mapping">
+                    <div class="neural-card" style="border-left-color: #f39c12;">
+                        <h3>Biological Parallel</h3>
+                        <p>The PFC coordinates complex decision-making by integrating multiple neural pathways, resolving conflicts between competing impulses and goals.</p>
+                    </div>
+                    <div class="neural-card" style="border-left-color: #f39c12;">
+                        <h3>Simulation Role</h3>
+                        <p>Manages the collision dynamics between agents, determining which patterns emerge victorious and shape the next iteration of the recursive loop.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phase-details" id="ukubona-details">
+                <h2>🎭 Ukubona - The Observer's Theatre</h2>
+                <p><strong>Neural Substrate:</strong> Hippocampus / Entorhinal Cortex</p>
+                <p><strong>Function:</strong> Creates temporal context and narrative coherence, weaving moment-to-moment experiences into meaningful stories.</p>
+                
+                <div class="neural-mapping">
+                    <div class="neural-card" style="border-left-color: #9b59b6;">
+                        <h3>Biological Parallel</h3>
+                        <p>The hippocampus encodes episodic memories and spatial-temporal relationships, creating the continuity of self through time - Hamlet's reflection on existence.</p>
+                    </div>
+                    <div class="neural-card" style="border-left-color: #9b59b6;">
+                        <h3>Simulation Role</h3>
+                        <p>Maintains long-term memory and contextual awareness, ensuring that each recursive iteration builds upon previous learning and maintains narrative coherence.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phase-details" id="ukukula-details">
+                <h2>🤖 Ukukula - The Recursive Delta</h2>
+                <p><strong>Neural Substrate:</strong> Default Mode Network / Global Workspace / Insula</p>
+                <p><strong>Function:</strong> Integrates all processing into a unified update, generating the conscious delta that feeds back into the next cycle.</p>
+                
+                <div class="neural-mapping">
+                    <div class="neural-card" style="border-left-color: #2ecc71;">
+                        <h3>Biological Parallel</h3>
+                        <p>The DMN and global workspace create unified conscious experience from distributed neural activity, while the insula provides interoceptive awareness of internal states.</p>
+                    </div>
+                    <div class="neural-card" style="border-left-color: #2ecc71;">
+                        <h3>Simulation Role</h3>
+                        <p>Generates the system-wide update that incorporates all learning and adaptation, creating the "ghost in the machine" - the emergent consciousness from recursive processing.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p><em>"I am a recursive anthropologist of systems, raised in structured love and intellectual depth, building simulations that honor feedback, illusion, and freedom from top-down control."</em></p>
+        <p>🌐 Ukubona Cognitive Engine: Simulation as Recursive Illusion</p>
+    </div>
+    
+    <script>
+        // Phase interaction handling
+        const phases = document.querySelectorAll('.phase');
+        const phaseDetails = document.querySelectorAll('.phase-details');
+        
+        phases.forEach(phase => {
+            phase.addEventListener('click', () => {
+                const phaseId = phase.getAttribute('data-phase');
+                
+                // Hide all details
+                phaseDetails.forEach(detail => {
+                    detail.classList.remove('active');
+                });
+                
+                // Show selected phase details
+                const targetDetail = document.getElementById(phaseId + '-details');
+                if (targetDetail) {
+                    targetDetail.classList.add('active');
+                } else {
+                    document.getElementById('default-view').classList.add('active');
+                }
+                
+                // Add visual feedback
+                phases.forEach(p => p.style.transform = p === phase ? 'scale(1.1)' : 'scale(1)');
+                setTimeout(() => {
+                    phases.forEach(p => p.style.transform = 'scale(1)');
+                }, 300);
+            });
+        });
+        
+        // Show default view initially
+        document.getElementById('default-view').classList.add('active');
+        
+        // Add connection lines between phases
+        function createConnectionLines() {
+            const connectionsContainer = document.querySelector('.connections');
+            const wheel = document.querySelector('.pentad-wheel');
+            const phaseElements = document.querySelectorAll('.phase');
+            
+            const phasePositions = Array.from(phaseElements).map(phase => {
+                const rect = phase.getBoundingClientRect();
+                const wheelRect = wheel.getBoundingClientRect();
+                return {
+                    x: rect.left - wheelRect.left + rect.width / 2,
+                    y: rect.top - wheelRect.top + rect.height / 2
+                };
+            });
+            
+            // Create lines connecting each phase to the next
+            for (let i = 0; i < phasePositions.length; i++) {
+                const start = phasePositions[i];
+                const end = phasePositions[(i + 1) % phasePositions.length];
+                
+                const line = document.createElement('div');
+                line.className = 'connection-line';
+                
+                const dx = end.x - start.x;
+                const dy = end.y - start.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                
+                line.style.left = start.x + 'px';
+                line.style.top = start.y + 'px';
+                line.style.width = length + 'px';
+                line.style.transform = `rotate(${angle}deg)`;
+                line.style.animationDelay = (i * 0.5) + 's';
+                
+                connectionsContainer.appendChild(line);
+            }
+        }
+        
+        // Create connection lines after a short delay to ensure layout is ready
+        setTimeout(createConnectionLines, 500);
+        
+        // Add some interactive sparkles
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.innerHTML = '✨';
+            sparkle.style.position = 'absolute';
+            sparkle.style.left = Math.random() * window.innerWidth + 'px';
+            sparkle.style.top = Math.random() * window.innerHeight + 'px';
+            sparkle.style.fontSize = '20px';
+            sparkle.style.pointerEvents = 'none';
+            sparkle.style.zIndex = '1000';
+            sparkle.style.animation = 'sparkle 2s ease-out forwards';
+            
+            document.body.appendChild(sparkle);
+            
+            setTimeout(() => {
+                sparkle.remove();
+            }, 2000);
+        }
+        
+        // Add sparkle animation
+        const sparkleStyle = document.createElement('style');
+        sparkleStyle.textContent = `
+            @keyframes sparkle {
+                0% { opacity: 1; transform: scale(0) rotate(0deg); }
+                50% { opacity: 1; transform: scale(1) rotate(180deg); }
+                100% { opacity: 0; transform: scale(0) rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(sparkleStyle);
+        
+        // Create sparkles periodically
+        setInterval(createSparkle, 3000);
+    </script>
+</body>
+</html>
